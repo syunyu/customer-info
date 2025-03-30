@@ -122,7 +122,7 @@ with st.form("customer_form"):
     submit = col1.form_submit_button("Submit Form提交表格")
     clear = col2.form_submit_button("Clear Form清除表格")
 
-st.markdown("**⚠️注意:** 点击 *提交表格* 提交已输入的信息；清除现有表格内容需点击 *清除表格* 两次后不可连击，要等待返回再次点击清除方可在空白表格进行输入；否则需要手动一行行清除先前输入的信息"）
+st.markdown("**⚠️注意:** 点击 *提交表格* 提交当前已输入的信息；清除现有表格内容需点击 *清除表格* 两次后(不可连击，要等待返回再次点击清除)方可清空上一个信息，在进行新的录入；否则需要手动一行行清除先前输入的信息"）
 
 ############# Handle Clear #############
 if clear:
