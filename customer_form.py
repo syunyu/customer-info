@@ -6,10 +6,10 @@ from openpyxl import load_workbook
 from PIL import Image
 
 # ################ Add Usushi Logo ############
-logo = Image.open("/Users/shiyunyu/Desktop/customer_info/logo.jpg")
+logo = Image.open("logo.jpg")
 st.image(logo, use_container_width= True) #use_container_width按照原图大小；width可自定义大小数字，比如200/300
 
-# Add Title, margin-top 数字越大间距越小
+# Add Title, margin-top
 st.markdown("<h1 style='text-align: center; margin-top: -60px;'>Customer Information Form</h1>",
     unsafe_allow_html=True)
 
