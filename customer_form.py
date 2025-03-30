@@ -14,6 +14,12 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 client = gspread.authorize(credentials)
 sheet = client.open(SHEET_NAME).sheet1
+try:
+    sheet.append_row(["TEST ENTRY", "111-222-3333", "Cash", "2025-03-30", 9.99, 1])
+    st.success("✅ Google Sheet write test successful. Check your sheet for the test row.")
+except Exception as e:
+    st.error(f"❌ Failed to write to Google Sheet: {e}")
+
 
 
 ############# Show Logo + Title #############
