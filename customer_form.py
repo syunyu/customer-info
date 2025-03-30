@@ -105,7 +105,7 @@ with st.form("customer_form"):
         st.session_state.form_data["visit_number"] = next_visit
 
         if max_reached and not is_new:
-            st.warning("‼️ This customer has visited us 10 times already!")
+            st.warning("‼️ 🎉This customer has visited us 10 times already!🎁")
             st.info("📋 Here are their past 10 visits:")
             st.dataframe(matched_df.sort_values("This Visit #"))
 
@@ -113,14 +113,16 @@ with st.form("customer_form"):
                 avg_total = matched_df["Total Amount"].astype(float).mean()
                 st.success(f"💰 Average Total Amount over 10 visits: ${avg_total:.2f}")
             except:
-                st.error("⚠️ Unable to calculate average Total Amount.")
+                st.error("❌ Unable to calculate average Total Amount.")
 
     st.session_state.form_data["visit_number"] = st.number_input("This Visit #", min_value=1, max_value=10,
         value=st.session_state.form_data["visit_number"], disabled=True)
 
     col1, col2 = st.columns(2)
-    submit = col1.form_submit_button("Submit Form")
-    clear = col2.form_submit_button("Clear Form")
+    submit = col1.form_submit_button("Submit Form提交表格")
+    clear = col2.form_submit_button("Clear Form清除表格")
+
+st.markdown(“**⚠️注意:** 点击 *提交表格* 提交已输入的信息；清除现有表格内容需点击 *清除表格* 两次后（不可连击，要等待返回再次点击）方可在空白表格进行输入；否则需要手动一行行清除先前输入的信息”）
 
 ############# Handle Clear #############
 if clear:
