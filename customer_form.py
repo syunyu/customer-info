@@ -553,7 +553,7 @@ st.markdown("---")
 st.header("🔍 Search Customer Info")
 
 search_option = st.radio("Search by 选择搜索方式（姓名或电话）", ["Name", "Phone Number"])
-search_query = st.text_input("Enter search term (姓名不分大小写)")
+search_query = st.text_input("Enter search term（搜索内容）")
 
 if st.button("Search"):
     if not os.path.exists(EXCEL_FILE):
