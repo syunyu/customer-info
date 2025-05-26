@@ -119,7 +119,7 @@ with st.form("customer_form"):
                     start = total_visits - 9
                     end = total_visits
                     avg_block = matched_df[matched_df["This Visit #"].between(start, end)]["Total Amount"].mean()
-                    st.success(f"🎯 Avg Total from Visit {start}–{end}: ${avg_block:.2f}")
+                    st.success(f"💰 Avg Total from Visit {start}–{end}: ${avg_block:.2f}")
 
             except:
                 st.error("❌ Unable to calculate average Total Amount.")
