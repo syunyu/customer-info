@@ -102,7 +102,7 @@ with st.form("customer_form"):
 
         if not is_new:
             total_visits = next_visit - 1
-            st.warning(f"🎊 This customer has already visited {total_visits} times! And this is the {next_visit)!")
+            st.warning(f"🎊 This customer has already visited {total_visits} times! And this is the {next_visit} times!")
             st.info("📋 Here are their past visits:")
             st.dataframe(matched_df.sort_values("This Visit #"))
 
