@@ -109,17 +109,12 @@ with st.form("customer_form"):
             try:
                 matched_df["Total Amount"] = matched_df["Total Amount"].astype(float)
 
-                # Always show 1–10 visit average if available
-                if total_visits >= 10:
-                    avg_first_10 = matched_df[matched_df["This Visit #"].between(1, 10)]["Total Amount"].mean()
-                    st.success(f"💰 Average Total from Visit 1–10: ${avg_first_10:.2f}")
-
                 # If current visit is a multiple of 10 (10, 20, 30…), show last 10 visit average
                 if total_visits % 10 == 0:
                     start = total_visits - 9
                     end = total_visits
                     avg_block = matched_df[matched_df["This Visit #"].between(start, end)]["Total Amount"].mean()
-                    st.success(f"💰 Avg Total from Visit {start}–{end}: ${avg_block:.2f}")
+                    st.success(f"💰 Average Total from Visit {start}–{end}: ${avg_block:.2f}")
 
             except:
                 st.error("❌ Unable to calculate average Total Amount.")
