@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import pandas as pd
 from datetime import date
 from PIL import Image
@@ -15,7 +15,6 @@ credentials = Credentials.from_service_account_info(st.secrets["gcp_service_acco
 client = gspread.authorize(credentials)
 sheet = client.open(SHEET_NAME).sheet1
 
-
 ############# Show Logo + Title #############
 logo = Image.open("logo.jpg")
 st.image(logo, use_container_width=True)
@@ -23,6 +22,7 @@ st.markdown(
     "<h1 style='text-align: center; margin-top: -60px;'>Customer Information Form</h1>",
     unsafe_allow_html=True
 )
+
 ############# Phone Formatter #############
 def format_phone_number(phone_raw):
     digits = ''.join(filter(str.isdigit, phone_raw))
@@ -53,9 +53,6 @@ def get_next_visit_number(phone_number):
         return 1, False, pd.DataFrame(), True  # brand new customer
 
     max_visit = int(matches["This Visit #"].max())
-    if max_visit >= 10:
-        return max_visit, True, matches.drop(columns="Phone_digits"), False
-
     return max_visit + 1, False, matches.drop(columns="Phone_digits"), False
 
 ############# Session State Init #############
@@ -88,7 +85,6 @@ if st.session_state.clear_form:
     st.session_state.submitted = False
     st.session_state.clear_form = False
 
-
 ############# Input Form #############
 with st.form("customer_form"):
     st.session_state.form_data["name"] = st.text_input("Name", value=st.session_state.form_data["name"])
@@ -101,21 +97,34 @@ with st.form("customer_form"):
     # Auto-calculate Visit # based on phone number
     phone_input_so_far = st.session_state.form_data["phone"]
     if phone_input_so_far:
-        next_visit, max_reached, matched_df, is_new = get_next_visit_number(phone_input_so_far)
+        next_visit, _, matched_df, is_new = get_next_visit_number(phone_input_so_far)
         st.session_state.form_data["visit_number"] = next_visit
 
-        if max_reached and not is_new:
-            st.warning("‼️ 🎉This customer has visited us 10 times already!🎁")
-            st.info("📋 Here are their past 10 visits:")
+        if not is_new:
+            total_visits = next_visit - 1
+            st.warning(f"🎊 This customer has already visited {total_visits} times!")
+            st.info("📋 Here are their past visits:")
             st.dataframe(matched_df.sort_values("This Visit #"))
 
             try:
-                avg_total = matched_df["Total Amount"].astype(float).mean()
-                st.success(f"💰 Average Total Amount over 10 visits: ${avg_total:.2f}")
+                matched_df["Total Amount"] = matched_df["Total Amount"].astype(float)
+
+                # Always show 1–10 visit average if available
+                if total_visits >= 10:
+                    avg_first_10 = matched_df[matched_df["This Visit #"].between(1, 10)]["Total Amount"].mean()
+                    st.success(f"💰 Average Total from Visit 1–10: ${avg_first_10:.2f}")
+
+                # If current visit is a multiple of 10 (10, 20, 30…), show last 10 visit average
+                if total_visits % 10 == 0:
+                    start = total_visits - 9
+                    end = total_visits
+                    avg_block = matched_df[matched_df["This Visit #"].between(start, end)]["Total Amount"].mean()
+                    st.success(f"🎯 Avg Total from Visit {start}–{end}: ${avg_block:.2f}")
+
             except:
                 st.error("❌ Unable to calculate average Total Amount.")
 
-    st.session_state.form_data["visit_number"] = st.number_input("This Visit #", min_value=1, max_value=10,
+    st.session_state.form_data["visit_number"] = st.number_input("This Visit #", min_value=1,
         value=st.session_state.form_data["visit_number"], disabled=True)
 
     col1, col2 = st.columns(2)
@@ -124,18 +133,12 @@ with st.form("customer_form"):
 
 st.markdown("**⚠️注意:** 点击提交表格提交当前已输入的信息；清除现有表格内容需点击***清除表格***两次后(不可连击，要等待返回再次点击清除表格)方可清空上一次输入，在进行新的录入；否则需要手动一行行清除先前输入的信息")
 
-
 ############# Handle Clear #############
 if clear:
     st.session_state.clear_form = True
 
 ############# Handle Submit #############
 if submit:
-    _, max_reached_check, _, is_new_check = get_next_visit_number(st.session_state.form_data["phone"])
-    if max_reached_check and not is_new_check:
-        st.error("❌ Cannot submit. This customer has already visited 10 times.")
-        st.stop()
-
     if not st.session_state.form_data["name"].strip():
         st.error("❌ Name is required.")
         st.stop()
